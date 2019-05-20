@@ -148,22 +148,27 @@ class StockSpider(scrapy.Spider):
             price = float(price.replace(',',''))
             prevClose = float(data['Prev. Close:'].replace(',',''))
             difference = price / prevClose
+            pe = 0
+            pb = 0
+            yd = 0
+            marketCap = 0
+            today = ''
             try:
                 pe = float(data['P/E Ratio:'].replace(',','').strip()) * difference
             except:
-                pe = 0
+                pass
             try:
                 pb = float(data['P/B Ratio:'].replace(',','').strip()) * difference
             except:
-                pb = 0
+                pass
             try:
                 yd = float(data['Yield:'].replace(',','').strip()) / difference
             except:
-                yd = 0
+                pass
             try:
                 marketCap = float(data['Market Cap (Dil. Avg Shrs):'].replace(',','').strip()) * difference
             except:
-                marketCap = 0
+                pass
             last_day = stocks.find({ "ticker" : response.meta['ticker'] }).sort("date", -1).limit(1)[0]
             if last_day['close'] == price:
                 today = last_day['date']
