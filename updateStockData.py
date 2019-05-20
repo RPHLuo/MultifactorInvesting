@@ -35,7 +35,9 @@ class StockSpider(scrapy.Spider):
             'scrapy_splash.SplashCookiesMiddleware': 723,
             'scrapy_splash.SplashMiddleware': 725,
             'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
-        }
+        },
+        'CONCURRENT_ITEMS':500,
+        'CONCURRENT_REQUESTS':1
     }
 
     def reCrawl(self, ticker, preset):
@@ -69,6 +71,7 @@ class StockSpider(scrapy.Spider):
                     )
                 request.meta['ticker'] = ticker
                 request.meta['type'] = preset
+                request.priority = 10 - preset
                 yield request;
 
     def parse(self, response):
@@ -84,7 +87,7 @@ class StockSpider(scrapy.Spider):
                         index += 1
                 stockdata['date'] = datetime.strptime(stockdata['date'], '%m/%d/%Y').strftime('%d/%m/%Y')
                 stockdata['ticker'] = response.meta['ticker']
-                stocks.update({'ticker':stockdata['ticker'], 'date':stockdata['date']},stockdata, upsert=True)
+                stocks.update({'ticker':stockdata['ticker'], 'date':stockdata['date']},{ "$set": stockdata }, upsert=True)
         elif type == 'balance sheet':
             price = response.css('.quote-price.priceLarge > span::text').get().replace(',','')
             rows = response.css('.BalanceSheet > tr')
@@ -103,7 +106,11 @@ class StockSpider(scrapy.Spider):
             equity = []
             debtEquity = 0
             currentRatio = 0
-            if not data:
+            try:
+                for index in range(0,len(data['Total Assets'])):
+                    pass
+            except:
+                self.log('RECRAWL')
                 self.reCrawl(response.meta['ticker'],response.meta['type'])
             for index in range(0,len(data['Total Assets'])):
                 try:
@@ -130,12 +137,12 @@ class StockSpider(scrapy.Spider):
                     debtEquity = liabilities / equity
                     currentRatio = cAssets / cLiabilities if cLiabilities else 0
                     break
-            last_day = stocks.find({ "ticker" : response.meta['ticker'] }).sort("date", -1).limit(1)[0]
+            last_day = stocks.find({ 'ticker': response.meta['ticker'] }).sort("date", -1).limit(1)[0]
             if last_day['close'] == price:
                 today = last_day['date']
             else:
                 today = datetime.now().strftime('%d/%m/%Y')
-            stocks.update({'ticker':response.meta['ticker'], 'date':today}, {'ticker':response.meta['ticker'], 'date':today,'debtEquity':debtEquity, 'currentRatio':currentRatio}, upsert=True)
+            stocks.update({'ticker':response.meta['ticker'], 'date':today}, { "$set": { 'ticker':response.meta['ticker'], 'date':today,'debtEquity':debtEquity, 'currentRatio':currentRatio } }, upsert=True)
         elif type == 'quote':
             price = response.css('.quote-price.priceLarge > span::text').get()
             rows = response.css('tr > td > table > tbody > tr')
@@ -169,12 +176,12 @@ class StockSpider(scrapy.Spider):
                 marketCap = float(data['Market Cap (Dil. Avg Shrs):'].replace(',','').strip()) * difference
             except:
                 pass
-            last_day = stocks.find({ "ticker" : response.meta['ticker'] }).sort("date", -1).limit(1)[0]
+            last_day = stocks.find({ 'ticker': response.meta['ticker']}).sort('date', -1).limit(1)[0]
             if last_day['close'] == price:
                 today = last_day['date']
             else:
                 today = datetime.now().strftime('%d/%m/%Y')
-            stocks.update({'ticker':response.meta['ticker'], 'date':today}, {'ticker':response.meta['ticker'], 'date':today,'close':price, 'pe':pe, 'pb':pb,'yd':yd, 'marketCap':marketCap}, upsert=True)
+            stocks.update({'ticker':response.meta['ticker'], 'date':today}, { "$set": { 'ticker':response.meta['ticker'], 'date':today,'close':price, 'pe':pe, 'pb':pb,'yd':yd, 'marketCap':marketCap } }, upsert=True)
         elif type == 'earningsdate':
             rows = response.css('div.earningstable > table > tbody > tr')
             rows.pop(0)
@@ -184,6 +191,6 @@ class StockSpider(scrapy.Spider):
                     date = data[1].css('td::text').get()
                     date = datetime.strptime(date, '%m/%d/%y')
                     eps = data[2].css('td::text').get()
-                    earnings.update({'ticker':response.meta['ticker'], 'month':date.strftime('%m'), 'year':date.strftime('%Y')}, {'ticker':response.meta['ticker'], 'month':date.strftime('%m'), 'year':date.strftime('%Y'),'eps':eps,'date':date.strftime('%d/%m/%Y')}, upsert=True)
+                    earnings.update({'ticker':response.meta['ticker'], 'month':date.strftime('%m'), 'year':date.strftime('%Y')}, { "$set": {'ticker':response.meta['ticker'], 'month':date.strftime('%m'), 'year':date.strftime('%Y'),'eps':eps,'date':date.strftime('%d/%m/%Y') } }, upsert=True)
                 except:
                     pass
