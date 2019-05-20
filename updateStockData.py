@@ -16,12 +16,12 @@ function main(splash)
     assert(splash:autoload("https://code.jquery.com/jquery-2.1.3.min.js"))
     local url = splash.args.url
     splash:go(url)
-    splash:wait(25)
+    splash:wait(20)
     splash:set_viewport_full()
     splash:runjs("$('a[rv-on-click=\\"binders.periods.setSelected\\"]')[1].click()")
-    splash:wait(30)
+    splash:wait(25)
     splash:runjs("$('a[rv-on-click=\\"binders.types.setSelected\\"]')[1].click()")
-    splash:wait(30)
+    splash:wait(25)
         return {
         html = splash:html()
     }
@@ -38,7 +38,7 @@ class StockSpider(scrapy.Spider):
         }
     }
 
-    def reCrawl(ticker, preset):
+    def reCrawl(self, ticker, preset):
         if (types[preset] == 'balance sheet'):
             request = SplashRequest(presetUrls[preset]+ticker, self.parse,
                 endpoint='execute',
@@ -104,7 +104,7 @@ class StockSpider(scrapy.Spider):
             debtEquity = 0
             currentRatio = 0
             if not data:
-                self.reCrawl(response.meta['ticker'],response.meta['preset'])
+                self.reCrawl(response.meta['ticker'],response.meta['type'])
             for index in range(0,len(data['Total Assets'])):
                 try:
                     cAssets.append(float(data['Current Assets'][index].replace(',','')))
