@@ -2,24 +2,22 @@ version: "3"
 services:
   splash:
     image: scrapinghub/splash
+    expose:
+      - 8050
+      - 5023
     ports:
-      - 8050:8050
-      - 5023:5023
+      - "8050:8050"
+      - "5023:5023"
   mongo:
     image: mongo
+    expose:
+      - 27017
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
       - /data/db
-  web:
-    image: prakhar1989/foodtrucks-web
-    command: python app.py
+  scraper:
+    build: ./scraper
     depends_on:
-      - es
-    ports:
-      - 5000:5000
-    volumes:
-      - ./flask-app:/opt/flask-app
-volumes:
-    esdata1:
-      driver: local
+      - splash
+      - mongo

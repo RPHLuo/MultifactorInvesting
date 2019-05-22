@@ -3,7 +3,10 @@ import time
 import scrapy
 import pymongo
 from scrapy_splash import SplashRequest
-mongoClient = pymongo.MongoClient("mongodb://localhost:27017/")
+import fillList
+time.sleep(10)
+fillList.fillList()
+mongoClient = pymongo.MongoClient("mongodb://mongo:27017/")
 tsx60data = mongoClient['tsx60data']
 stocks = tsx60data['stocks']
 constituents = tsx60data['constituents']
@@ -31,7 +34,7 @@ end
 class StockSpider(scrapy.Spider):
     name = 'PriceSpider'
     custom_settings = {
-        'SPLASH_URL': 'http://localhost:8050',
+        'SPLASH_URL': 'http://splash:8050',
         'DOWNLOADER_MIDDLEWARES' : {
             'scrapy_splash.SplashCookiesMiddleware': 723,
             'scrapy_splash.SplashMiddleware': 725,
