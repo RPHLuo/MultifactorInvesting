@@ -17,7 +17,7 @@ services:
     volumes:
       - /data/db
   scraper:
-    build: ./scraper
+    build: ./cron-scraper
     depends_on:
       - splash
       - mongo
