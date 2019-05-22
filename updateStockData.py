@@ -1,4 +1,5 @@
 from datetime import datetime
+import time
 import scrapy
 import pymongo
 from scrapy_splash import SplashRequest
@@ -35,9 +36,7 @@ class StockSpider(scrapy.Spider):
             'scrapy_splash.SplashCookiesMiddleware': 723,
             'scrapy_splash.SplashMiddleware': 725,
             'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
-        },
-        'CONCURRENT_ITEMS':500,
-        'CONCURRENT_REQUESTS':1
+        }
     }
 
     def reCrawl(self, ticker, preset):
@@ -73,6 +72,7 @@ class StockSpider(scrapy.Spider):
                 request.meta['type'] = preset
                 request.priority = 10 - preset
                 yield request;
+                time.sleep(2)
 
     def parse(self, response):
         type = types[response.meta['type']]
@@ -96,43 +96,41 @@ class StockSpider(scrapy.Spider):
                 key = row.css('td.qmod-table-title > span::text').get()
                 valuesText = row.css('td.qmod-textr::text')
                 values = []
-                for val in values:
+                for val in valuesText:
                     values.append(val.get())
                 data[key] = values
-            cAssets = []
-            assets = []
-            cLiabilities = []
-            liabilities = []
-            equity = []
+            cAssets = 0
+            assets = 0
+            cLiabilities = 0
+            liabilities = 0
+            equity = 0
             debtEquity = 0
             currentRatio = 0
-            try:
-                for index in range(0,len(data['Total Assets'])):
-                    pass
-            except:
+            if 'Total Assets' not in data or len(data['Total Assets']) == 0:
                 self.log('RECRAWL')
                 self.reCrawl(response.meta['ticker'],response.meta['type'])
+                return
             for index in range(0,len(data['Total Assets'])):
                 try:
-                    cAssets.append(float(data['Current Assets'][index].replace(',','')))
+                    cAssets = float(data['Current Assets'][index].replace(',',''))
                 except:
-                    cAssets.append(0)
+                    cAssets = 0
                 try:
-                    assets.append(float(data['Total Assets'][index].replace(',','')))
+                    assets = float(data['Total Assets'][index].replace(',',''))
                 except:
-                    assets.append(0)
+                    assets = 0
                 try:
-                    cLiabilities.append(float(data['Current Liabilities'][index].replace(',','')))
+                    cLiabilities = float(data['Current Liabilities'][index].replace(',',''))
                 except:
-                    cLiabilities.append(0)
+                    cLiabilities = 0
                 try:
-                    liabilities.append(float(data['Total Liabilities'][index].replace(',','')))
+                    liabilities = float(data['Total Liabilities'][index].replace(',',''))
                 except:
-                    liabilities.append(0)
+                    liabilities = 0
                 try:
-                    equity.append(float(data['Stockholders Equity'][index].replace(',','')))
+                    equity = float(data['Stockholders Equity'][index].replace(',',''))
                 except:
-                    equity.append(0)
+                    equity = 0
                 if equity and (cAssets or cLiabilities):
                     debtEquity = liabilities / equity
                     currentRatio = cAssets / cLiabilities if cLiabilities else 0
