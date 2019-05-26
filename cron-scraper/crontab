@@ -1,1 +1,2 @@
-00 22 * * 1-5 root scrapy runspider ./updateStockData.py
+00 22 * * 1-5 root scrapy runspider ./updateStockData.py > /proc/1/fd/1 2>/proc/1/fd/2
+

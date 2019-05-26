@@ -10,4 +10,4 @@ RUN apt-get install -y libffi-dev libxml2-dev libxslt-dev lib32z1-dev libssl-dev
 RUN pip install scrapy
 RUN pip install pymongo
 RUN pip install scrapy-splash
-CMD cron && tail -f /var/log/cron.log
+CMD ["cron", "-f"]
