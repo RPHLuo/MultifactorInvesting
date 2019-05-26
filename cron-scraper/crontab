@@ -1,1 +1,1 @@
-* * * * * root cd /usr/src/app/ && /usr/local/bin/scrapy runspider ./updateStockData.py > /proc/1/fd/1 2>/proc/1/fd/2
+00 22 * * 1-5 root cd /usr/src/app/ && /usr/local/bin/scrapy runspider ./updateStockData.py > /proc/1/fd/1 2>/proc/1/fd/2
