@@ -45,6 +45,7 @@ for stock in stockData:
             stock['marketCap'] = price * report['sharesOutstanding']
             stock['debtEquity']  = report['debtEquity']
             stock['currentRatio'] = report['currentRatio']
+            del stock['_id']
             stocks.update({ 'ticker':stock['ticker'], 'date':stock['date'] }, { '$set':stock })
             break
         elif len(keys) == index + 1:
@@ -56,4 +57,5 @@ for stock in stockData:
             stock['marketCap'] = price * report['sharesOutstanding']
             stock['debtEquity']  = report['debtEquity']
             stock['currentRatio'] = report['currentRatio']
+            del stock['_id']
             stocks.update({ 'ticker':stock['ticker'], 'date':stock['date'] }, { '$set':stock })
