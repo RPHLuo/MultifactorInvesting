@@ -88,6 +88,8 @@ class StockSpider(scrapy.Spider):
                         index += 1
                 stockdata['date'] = datetime.strptime(stockdata['date'], '%m/%d/%Y').strftime('%d/%m/%Y')
                 stockdata['ticker'] = response.meta['ticker']
+                dateNumber = datetime.strptime(stockdata['date'], '%d/%m/%Y').strftime('%Y%m%d')
+                stockdata['dateNumber'] = int(dateNumber)
                 stocks.update({'ticker':stockdata['ticker'], 'date':stockdata['date']},{ "$set": stockdata }, upsert=True)
         elif type == 'balance sheet':
             price = response.css('.quote-price.priceLarge > span::text').get().replace(',','')
@@ -141,7 +143,9 @@ class StockSpider(scrapy.Spider):
                 today = last_day['date']
             else:
                 today = datetime.now().strftime('%d/%m/%Y')
-            stocks.update({'ticker':response.meta['ticker'], 'date':today}, { "$set": { 'ticker':response.meta['ticker'], 'date':today,'debtEquity':debtEquity, 'currentRatio':currentRatio } }, upsert=True)
+            date = datetime.strptime(today, '%d/%m/%Y').strftime('%Y%m%d')
+            dateNumber = int(date)
+            stocks.update({'ticker':response.meta['ticker'], 'date':today}, { "$set": { 'ticker':response.meta['ticker'], 'date':today,'debtEquity':debtEquity, 'currentRatio':currentRatio, 'dateNumber':dateNumber } }, upsert=True)
         elif type == 'quote':
             price = response.css('.quote-price.priceLarge > span::text').get()
             rows = response.css('tr > td > table > tbody > tr')
@@ -180,7 +184,10 @@ class StockSpider(scrapy.Spider):
                 today = last_day['date']
             else:
                 today = datetime.now().strftime('%d/%m/%Y')
-            stocks.update({'ticker':response.meta['ticker'], 'date':today}, { "$set": { 'ticker':response.meta['ticker'], 'date':today,'close':price, 'pe':pe, 'pb':pb,'yd':yd, 'marketCap':marketCap } }, upsert=True)
+
+            date = datetime.strptime(today, '%d/%m/%Y').strftime('%Y%m%d')
+            dateNumber = int(date)
+            stocks.update({'ticker':response.meta['ticker'], 'date':today}, { "$set": { 'ticker':response.meta['ticker'], 'date':today,'close':price, 'pe':pe, 'pb':pb,'yd':yd, 'marketCap':marketCap, 'dateNumber':dateNumber } }, upsert=True)
         elif type == 'earningsdate':
             rows = response.css('div.earningstable > table > tbody > tr')
             rows.pop(0)
