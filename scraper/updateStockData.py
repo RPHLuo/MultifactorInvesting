@@ -90,6 +90,17 @@ class StockSpider(scrapy.Spider):
                 stockdata['ticker'] = response.meta['ticker']
                 dateNumber = datetime.strptime(stockdata['date'], '%d/%m/%Y').strftime('%Y%m%d')
                 stockdata['dateNumber'] = int(dateNumber)
+
+                volumeText = str(stockdata['volume'])
+                volume = 0
+                if 'k' in volumeText:
+                    volume = float(volumeText.replace('k',''))
+                    volume *= 1000
+                elif 'm' in volumeText:
+                    volume = float(volumeText.replace('m',''))
+                    volume *= 1000000
+                stock['volume'] = volume
+
                 stocks.update({'ticker':stockdata['ticker'], 'date':stockdata['date']},{ "$set": stockdata }, upsert=True)
         elif type == 'balance sheet':
             price = response.css('.quote-price.priceLarge > span::text').get().replace(',','')
