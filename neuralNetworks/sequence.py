@@ -89,4 +89,3 @@ def getSinglePointInput(ticker, dateNumber, time_step):
         ,'volume':{ '$exists':True }}, STOCKFEATURES).sort('dateNumber', pymongo.ASCENDING).limit(time_step)
     resultArray = [[float(v) for v in stock.values()] for stock in result ]
     return np.array(resultArray)
-

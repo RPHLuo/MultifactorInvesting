@@ -52,12 +52,18 @@ model.add(Dense(1))
 
 model.compile(optimizer='adam', loss='mae')
 
-#if os.path.exists('aem_lstm_weights.h5'):
-#    model.load_weights('aem_lstm_weights.h5')
-history = model.fit(train_X, train_y, epochs=100, batch_size=30, validation_data=(test_X, test_y), verbose=2, shuffle=False)
+if os.path.exists('aem_lstm_weights.h5'):
+    model.load_weights('aem_lstm_weights.h5')
+history = model.fit(train_X, train_y, epochs=10, batch_size=30, validation_data=(test_X, test_y), verbose=2, shuffle=False)
 
 #save weights
 model.save_weights('aem_lstm_weights.h5')
+
+#predict_here, change time_step to current (-1)
+input = np.array([inputset[-time_step,:]])
+prediction = model.predict(input)
+prediction = priceScaler.inverse_transform(prediction)
+print(prediction)
 
 # plot history
 pyplot.plot(history.history['loss'], label='train')
