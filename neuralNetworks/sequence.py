@@ -46,28 +46,28 @@ def size(ticker):
     client = pymongo.MongoClient('mongodb://localhost:27017/')
     db = client['tsx60data']
     collection = db['stocks']
-    result = self._collection.find({'ticker':ticker},STOCKFEATURES)
+    result = self._collection.find({'ticker':ticker,'volume':{ '$exists':True }},STOCKFEATURES)
     return len(size)
 
 def get(ticker, size, order):
     client = pymongo.MongoClient('mongodb://localhost:27017/')
     db = client['tsx60data']
     collection = db['stocks']
-    result = self._collection.find({'ticker':ticker},STOCKFEATURES).sort('dateNumber', order).limit(size)
+    result = self._collection.find({'ticker':ticker,'volume':{ '$exists':True }},STOCKFEATURES).sort('dateNumber', order).limit(size)
     resultArray = [[float(v) for v in stock.values()] for stock in result ]
     return np.array(resultArray)
 def getAll(ticker):
     client = pymongo.MongoClient('mongodb://localhost:27017/')
     db = client['tsx60data']
     collection = db['stocks']
-    result = collection.find({'ticker':ticker},STOCKFEATURES).sort('dateNumber', pymongo.ASCENDING)
+    result = collection.find({'ticker':ticker,'volume':{ '$exists':True }},STOCKFEATURES).sort('dateNumber', pymongo.ASCENDING)
     resultArray = [[float(v) for v in stock.values()] for stock in result ]
     return np.array(resultArray)
 def getAllPrices(ticker):
     client = pymongo.MongoClient('mongodb://localhost:27017/')
     db = client['tsx60data']
     collection = db['stocks']
-    result = collection.find({'ticker':ticker},{'close':1, '_id':0}).sort('dateNumber', pymongo.ASCENDING)
+    result = collection.find({'ticker':ticker,'volume':{ '$exists':True }},{'close':1, '_id':0}).sort('dateNumber', pymongo.ASCENDING)
     resultArray = [[float(v) for v in stock.values()] for stock in result ]
     return np.array(resultArray)
 
@@ -78,3 +78,15 @@ def get3dData(stocks, time_steps):
         datapoint = stocks[i:i+time_steps]
         resultData.append(datapoint)
     return np.array(resultData, np.float32)
+
+def getSinglePointInput(ticker, dateNumber, time_step):
+    client = pymongo.MongoClient('mongodb://localhost:27017/')
+    db = client['tsx60data']
+    collection = db['stocks']
+    result = collection.find({
+        'ticker':ticker, 'dateNumber':
+            { '$gte': dateNumber }
+        ,'volume':{ '$exists':True }}, STOCKFEATURES).sort('dateNumber', pymongo.ASCENDING).limit(time_step)
+    resultArray = [[float(v) for v in stock.values()] for stock in result ]
+    return np.array(resultArray)
+
