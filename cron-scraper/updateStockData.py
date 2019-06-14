@@ -101,7 +101,7 @@ class StockSpider(scrapy.Spider):
                 elif 'm' in volumeText:
                     volume = float(volumeText.replace('m',''))
                     volume *= 1000000
-                stock['volume'] = volume
+                stockdata['volume'] = volume
 
                 stocks.update({'ticker':stockdata['ticker'], 'date':stockdata['date']},{ "$set": stockdata }, upsert=True)
         elif type == 'balance sheet':
