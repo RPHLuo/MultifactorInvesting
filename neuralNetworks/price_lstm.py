@@ -20,17 +20,11 @@ inputset = sequence.get3dData(scaled, time_step)
 outputset = priceScaler.fit_transform(outputset)
 dataset_size = len(scaled)
 train_percent = 0.7
+file = ticker + '_lstm.h5'
 
 train_size = math.floor(train_percent * dataset_size)
 test_size = dataset_size - train_size
 predict_length=1
-# Generators
-#train_generator = MongoSequence(train_size, 2, query={'ticker':'AEM'})
-#test_generator = MongoSequence(test_size, 2, query={'ticker':'AEM'})
-
-#data
-#train_dataset = sequence.get('AEM',train_size,pymongo.ASCENDING)
-#test_dataset = sequence.get('AEM',test_size,pymongo.DESCENDING)
 
 start = 500
 train_X = inputset[start:train_size]
@@ -52,12 +46,12 @@ model.add(Dense(1))
 
 model.compile(optimizer='adam', loss='mae')
 
-if os.path.exists('aem_lstm_weights.h5'):
-    model.load_weights('aem_lstm_weights.h5')
+if os.path.exists(file):
+    model.load_weights(file)
 history = model.fit(train_X, train_y, epochs=10, batch_size=30, validation_data=(test_X, test_y), verbose=2, shuffle=False)
 
 #save weights
-model.save_weights('aem_lstm_weights.h5')
+model.save_weights(file)
 
 #predict_here, change time_step to current (-1)
 input = np.array([inputset[-time_step,:]])

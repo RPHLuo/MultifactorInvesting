@@ -18,6 +18,11 @@ for t in tickers:
         elif 'm' in volumeText:
             volume = float(volumeText.replace('m',''))
             volume *= 1000000
+        else:
+            volume = float(volumeText)
         stock['volume'] = volume
+        stock['close'] = float(stock['close'])
+        stock['low'] = float(stock['low'])
+        stock['open'] = float(stock['open'])
         del stock['_id']
         stocks.update({'ticker':ticker,'date':stock['date']}, {'$set':stock})
