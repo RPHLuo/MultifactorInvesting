@@ -1,10 +1,11 @@
-import importlib.util
-lstm_spec = importlib.util.spec_from_file_location("module.name", "../neuralNetworks/price_lstm.py")
-lstm = importlib.util.module_from_spec(lstm_spec)
-lstm_spec.loader.exec_module(lstm)
+import os, sys
+lib_path = os.path.abspath(os.path.join('../neuralNetworks'))
+sys.path.append(lib_path)
+import price_lstm, target_ffnn
 
 supportedStocks = open('./supportedList','r')
 tickers = supportedStocks.read().split('\n')
 tickers = tickers[0:-1]
 for ticker in tickers:
-    
+    target_ffnn.train(ticker=ticker, performance_indicator=200, start=0, epochs=10)
+    price_lstm.train(ticker=ticker, time_step=200, start=0, epochs=10)

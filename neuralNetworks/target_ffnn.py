@@ -9,7 +9,7 @@ import math
 import os
 from sklearn.externals import joblib
 
-def train(ticker='AEM', performance_indicator=200, start=0):
+def train(ticker='AEM', performance_indicator=200, start=0, epochs=10):
     inputset = ffnn_data.getAll(ticker)
     outputset = ffnn_data.getBestPrices(ticker, dataset, performance_indicator)
 
@@ -51,7 +51,7 @@ def train(ticker='AEM', performance_indicator=200, start=0):
 
     if os.path.exists(file):
         model.load_weights(file)
-    history = model.fit(train_X, train_y, epochs=100, batch_size=32, validation_data=(test_X, test_y), verbose=2, shuffle=False)
+    history = model.fit(train_X, train_y, epochs=epochs, batch_size=32, validation_data=(test_X, test_y), verbose=2, shuffle=False)
     model.save_weights(file)
 
 def run(ticker='AEM', dateNumber=20180608, time_step=200):

@@ -9,7 +9,7 @@ import math
 import os
 from sklearn.externals import joblib
 
-def train(ticker='AEM', time_step=200, start=500):
+def train(ticker='AEM', time_step=200, start=0, epochs=10):
     inputset = lstm_data.getAll(ticker)
     outputset = lstm_data.getAllPrices(ticker)
 
@@ -53,7 +53,7 @@ def train(ticker='AEM', time_step=200, start=500):
 
     if os.path.exists(file):
         model.load_weights(file)
-    history = model.fit(train_X, train_y, epochs=10, batch_size=30, validation_data=(test_X, test_y), verbose=2, shuffle=False)
+    history = model.fit(train_X, train_y, epochs=epochs, batch_size=30, validation_data=(test_X, test_y), verbose=2, shuffle=False)
     #save weights
     model.save_weights(file)
 
