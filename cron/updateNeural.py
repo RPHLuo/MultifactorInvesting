@@ -9,3 +9,5 @@ tickers = tickers[0:-1]
 for ticker in tickers:
     target_ffnn.train(ticker=ticker, performance_indicator=200, start=0, epochs=10)
     price_lstm.train(ticker=ticker, time_step=200, start=0, epochs=10)
+    target_ffnn.run(ticker=ticker, dateNumber=20180608, time_step=200)
+    price_lstm.run(ticker=ticker, dateNumber=20180608, time_step=200)

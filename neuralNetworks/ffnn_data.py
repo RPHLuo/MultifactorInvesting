@@ -51,6 +51,6 @@ def getSinglePointInput(ticker, dateNumber):
     result = collection.findOne({
         'ticker':ticker, 'dateNumber':
             { '$gte': dateNumber }
-    }, STOCKFEATURES).sort('dateNumber', pymongo.ASCENDING)
+    }, STOCKFEATURES, sort=[("dateNumber", pymongo.ASCENDING)])
     resultArray = [float(v) for v in result.values()]
     return np.array(resultArray)

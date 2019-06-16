@@ -54,10 +54,10 @@ def train(ticker='AEM', performance_indicator=200, start=0, epochs=10):
     history = model.fit(train_X, train_y, epochs=epochs, batch_size=32, validation_data=(test_X, test_y), verbose=2, shuffle=False)
     model.save_weights(file)
 
-def run(ticker='AEM', dateNumber=20180608, time_step=200):
+def run(ticker='AEM', dateNumber=20180608, performance_indicator=200):
     scaler_filename = './scalers/' + ticker+'_ffnn_input.scaler'
     price_scaler_filename = './scalers/' + ticker+'_ffnn_output.scaler'
-    file = './weights/' + ticker + '_ffnn_' + time_step + '_steps.h5'
+    file = './weights/' + ticker + '_ffnn_' + performance_indicator + '_steps.h5'
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     price_scaler = MinMaxScaler(feature_range=(0, 1))
