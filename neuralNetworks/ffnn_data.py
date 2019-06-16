@@ -1,4 +1,3 @@
-from keras.utils import Sequence
 import os
 import pickle
 import numpy as np
@@ -45,3 +44,13 @@ def getBestPrices(ticker, stocks, length):
             close = (close - startPrice) / startPrice
             returns.append([high,low,close])
     return np.array(returns)
+def getSinglePointInput(ticker, dateNumber):
+    client = pymongo.MongoClient('mongodb://localhost:27017/')
+    db = client['tsx60data']
+    collection = db['stocks']
+    result = collection.findOne({
+        'ticker':ticker, 'dateNumber':
+            { '$gte': dateNumber }
+        ,'volume':{ '$exists':True }}, STOCKFEATURES).sort('dateNumber', pymongo.ASCENDING)
+    resultArray = [float(v) for v in result.values()]
+    return np.array(resultArray)
