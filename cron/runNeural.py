@@ -8,5 +8,5 @@ supportedStocks = open('./supportedList','r')
 tickers = supportedStocks.read().split('\n')
 tickers = tickers[0:-1]
 for ticker in tickers:
-    target_ffnn.train(ticker=ticker, performance_indicator=200, start=0, epochs=10, path=path)
-    price_lstm.train(ticker=ticker, time_step=200, start=0, epochs=10, path=path)
+    target_ffnn.run(ticker=ticker, dateNumber=20180608, performance_indicator=200, path=path)
+    price_lstm.run(ticker=ticker, dateNumber=20180608, time_step=200, path=path)

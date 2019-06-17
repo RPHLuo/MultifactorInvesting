@@ -9,13 +9,13 @@ import math
 import os
 from sklearn.externals import joblib
 
-def train(ticker='AEM', performance_indicator=200, start=0, epochs=10):
+def train(ticker='AEM', performance_indicator=200, start=0, epochs=10, path='./'):
     inputset = ffnn_data.getAll(ticker)
-    outputset = ffnn_data.getBestPrices(ticker, dataset, performance_indicator)
+    outputset = ffnn_data.getBestPrices(ticker, inputset, performance_indicator)
 
-    scaler_filename = './scalers/' + ticker+'_ffnn_input.scaler'
-    price_scaler_filename = './scalers/' + ticker+'_ffnn_output.scaler'
-    file = './weights/' + ticker + '_ffnn_' + performance_indicator + '_steps.h5'
+    scaler_filename = path + 'scalers/' + ticker+'_ffnn_input.scaler'
+    price_scaler_filename = path + 'scalers/' + ticker+'_ffnn_output.scaler'
+    file = path + 'weights/' + ticker + '_ffnn_' + str(performance_indicator) + '_steps.h5'
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     price_scaler = MinMaxScaler(feature_range=(0, 1))
@@ -24,6 +24,8 @@ def train(ticker='AEM', performance_indicator=200, start=0, epochs=10):
         inputset = scaler.transform(inputset)
     else:
         inputset = scaler.fit_transform(inputset)
+        file_writer = open(scaler_filename,'w+')
+        file_writer.close()
         joblib.dump(scaler, scaler_filename)
 
     if os.path.exists(price_scaler_filename):
@@ -31,6 +33,8 @@ def train(ticker='AEM', performance_indicator=200, start=0, epochs=10):
         outputset = price_scaler.transform(outputset)
     else:
         outputset = price_scaler.fit_transform(outputset)
+        file_writer = open(price_scaler_filename,'w+')
+        file_writer.close()
         joblib.dump(price_scaler, price_scaler_filename)
 
     dataset_size = len(inputset)
@@ -54,33 +58,38 @@ def train(ticker='AEM', performance_indicator=200, start=0, epochs=10):
     history = model.fit(train_X, train_y, epochs=epochs, batch_size=32, validation_data=(test_X, test_y), verbose=2, shuffle=False)
     model.save_weights(file)
 
-def run(ticker='AEM', dateNumber=20180608, performance_indicator=200):
-    scaler_filename = './scalers/' + ticker+'_ffnn_input.scaler'
-    price_scaler_filename = './scalers/' + ticker+'_ffnn_output.scaler'
-    file = './weights/' + ticker + '_ffnn_' + performance_indicator + '_steps.h5'
+def run(ticker='AEM', dateNumber=20180608, performance_indicator=200, path='./'):
+    scaler_filename = path + 'scalers/' + ticker+'_ffnn_input.scaler'
+    price_scaler_filename = path + 'scalers/' + ticker+'_ffnn_output.scaler'
+    file = path + 'weights/' + ticker + '_ffnn_' + str(performance_indicator) + '_steps.h5'
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     price_scaler = MinMaxScaler(feature_range=(0, 1))
 
     inputset = ffnn_data.getAll(ticker)
-    outputset = ffnn_data.getAllPrices(ticker)
+    outputset = ffnn_data.getBestPrices(ticker, inputset, performance_indicator)
 
     if os.path.exists(scaler_filename):
         scaler = joblib.load(scaler_filename)
     else:
         inputset = scaler.fit_transform(inputset)
+        file_writer = open(scaler_filename,'w+')
+        file_writer.close()
         joblib.dump(scaler, scaler_filename)
+
     if os.path.exists(price_scaler_filename):
         price_scaler = joblib.load(price_scaler_filename)
     else:
         price_scaler.fit_transform(outputset)
+        file_writer = open(price_scaler_filename,'w+')
+        file_writer.close()
         joblib.dump(price_scaler, price_scaler_filename)
 
     stockdata = ffnn_data.getSinglePointInput(ticker, dateNumber)
     stockdata = scaler.transform(stockdata)
 
     model = Sequential()
-    model.add(Dense(64, activation='relu', input_shape=(train_X.shape[1],)))
+    model.add(Dense(64, activation='relu', input_shape=(stockdata.shape[1],)))
     model.add(Dense(32, activation='relu'))
     model.add(Dense(3, activation='sigmoid'))
 

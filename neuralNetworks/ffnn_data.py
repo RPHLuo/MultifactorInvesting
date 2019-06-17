@@ -48,9 +48,9 @@ def getSinglePointInput(ticker, dateNumber):
     client = pymongo.MongoClient('mongodb://localhost:27017/')
     db = client['tsx60data']
     collection = db['stocks']
-    result = collection.findOne({
+    result = collection.find_one({
         'ticker':ticker, 'dateNumber':
             { '$gte': dateNumber }
     }, STOCKFEATURES, sort=[("dateNumber", pymongo.ASCENDING)])
-    resultArray = [float(v) for v in result.values()]
+    resultArray = [[float(v) for v in result.values()]]
     return np.array(resultArray)

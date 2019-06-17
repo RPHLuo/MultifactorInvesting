@@ -9,13 +9,13 @@ import math
 import os
 from sklearn.externals import joblib
 
-def train(ticker='AEM', time_step=200, start=0, epochs=10):
+def train(ticker='AEM', time_step=200, start=0, epochs=10, path='./'):
     inputset = lstm_data.getAll(ticker)
     outputset = lstm_data.getAllPrices(ticker)
 
-    scaler_filename = './scalers/' + ticker+'_lstm_input.scaler'
-    price_scaler_filename = './scalers/' + ticker+'_lstm_output.scaler'
-    file = './weights/' + ticker + '_lstm_' + performance_indicator + '_steps.h5'
+    scaler_filename = path + 'scalers/' + ticker+'_lstm_input.scaler'
+    price_scaler_filename = path + 'scalers/' + ticker+'_lstm_output.scaler'
+    file = path + 'weights/' + ticker + '_lstm_' + str(time_step) + '_steps.h5'
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     price_scaler = MinMaxScaler(feature_range=(0, 1))
@@ -24,12 +24,17 @@ def train(ticker='AEM', time_step=200, start=0, epochs=10):
         inputset = scaler.transform(inputset)
     else:
         inputset = scaler.fit_transform(inputset)
+        file_writer = open(scaler_filename,'w+')
+        file_writer.close()
         joblib.dump(scaler, scaler_filename)
+
     if os.path.exists(price_scaler_filename):
         price_scaler = joblib.load(price_scaler_filename)
         outputset = price_scaler.transform(outputset)
     else:
         outputset = price_scaler.fit_transform(outputset)
+        file_writer = open(price_scaler_filename,'w+')
+        file_writer.close()
         joblib.dump(price_scaler, price_scaler_filename)
 
     inputset = lstm_data.get3dData(inputset, time_step)
@@ -57,10 +62,10 @@ def train(ticker='AEM', time_step=200, start=0, epochs=10):
     #save weights
     model.save_weights(file)
 
-def run(ticker='AEM', dateNumber=20180608, time_step=200):
-    scaler_filename = './scalers/' + ticker+'_lstm_input.scaler'
-    price_scaler_filename = './scalers/' + ticker+'_lstm_output.scaler'
-    file = './weights/' + ticker + '_lstm_' + time_step + '_steps.h5'
+def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
+    scaler_filename = path + 'scalers/' + ticker+'_lstm_input.scaler'
+    price_scaler_filename = path + 'scalers/' + ticker+'_lstm_output.scaler'
+    file = path + 'weights/' + ticker + '_lstm_' + str(time_step) + '_steps.h5'
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     price_scaler = MinMaxScaler(feature_range=(0, 1))
@@ -72,11 +77,16 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200):
         scaler = joblib.load(scaler_filename)
     else:
         inputset = scaler.fit_transform(inputset)
+        file_writer = open(scaler_filename,'w+')
+        file_writer.close()
         joblib.dump(scaler, scaler_filename)
+
     if os.path.exists(price_scaler_filename):
         price_scaler = joblib.load(price_scaler_filename)
     else:
         price_scaler.fit_transform(outputset)
+        file_writer = open(price_scaler_filename,'w+')
+        file_writer.close()
         joblib.dump(price_scaler, price_scaler_filename)
 
     stockdata = lstm_data.getSinglePointInput(ticker, dateNumber, time_step+1)
@@ -88,7 +98,7 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200):
     model.add(Dense(1))
 
     if os.path.exists(file):
-        model.load_weights('aem_lstm_weights.h5')
+        model.load_weights(file)
         model.compile(optimizer='adam', loss='mae')
         prediction = model.predict(stockdata)
         prediction = price_scaler.inverse_transform(prediction)
