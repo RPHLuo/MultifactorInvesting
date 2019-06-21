@@ -102,7 +102,9 @@ class StockSpider(scrapy.Spider):
                     volume = float(volumeText.replace('m',''))
                     volume *= 1000000
                 stockdata['volume'] = volume
-
+                stockdata['open'] = float(stockdata['open'])
+                stockdata['close'] = float(stockdata['close'])
+                stockdata['low'] = float(stockdata['low'])
                 stocks.update({'ticker':stockdata['ticker'], 'date':stockdata['date']},{ "$set": stockdata }, upsert=True)
         elif type == 'balance sheet':
             price = response.css('.quote-price.priceLarge > span::text').get().replace(',','')

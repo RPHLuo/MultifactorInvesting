@@ -6,15 +6,16 @@ import pymongo
 from operator import itemgetter
 STOCKFEATURESIZE = 8
 STOCKFEATURES = {'currentRatio':1, 'debtEquity':1, 'marketCap':1, 'pb':1, 'pe': 1, 'yd':1, '_id':0}
+url = 'mongodb://mongo:27017/'
 
 def size(ticker):
-    client = pymongo.MongoClient('mongodb://localhost:27017/')
+    client = pymongo.MongoClient(url)
     db = client['tsx60data']
     collection = db['stocks']
     result = self._collection.find({'ticker':ticker},STOCKFEATURES)
     return len(size)
 def getAll(ticker):
-    client = pymongo.MongoClient('mongodb://localhost:27017/')
+    client = pymongo.MongoClient(url)
     db = client['tsx60data']
     collection = db['stocks']
     result = collection.find({'ticker':ticker},STOCKFEATURES).sort('dateNumber', pymongo.ASCENDING)
@@ -23,7 +24,7 @@ def getAll(ticker):
 
 #find the potential gain and potential loss at the end of this period
 def getBestPrices(ticker, stocks, length):
-    client = pymongo.MongoClient('mongodb://localhost:27017/')
+    client = pymongo.MongoClient(url)
     db = client['tsx60data']
     collection = db['stocks']
     stocks = collection.find({'ticker':ticker},{'close':1, 'dateNumber':1, '_id':0}).sort('dateNumber', pymongo.ASCENDING)
@@ -45,7 +46,7 @@ def getBestPrices(ticker, stocks, length):
             returns.append([high,low,close])
     return np.array(returns)
 def getSinglePointInput(ticker, dateNumber):
-    client = pymongo.MongoClient('mongodb://localhost:27017/')
+    client = pymongo.MongoClient(url)
     db = client['tsx60data']
     collection = db['stocks']
     result = collection.find_one({

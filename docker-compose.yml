@@ -16,8 +16,8 @@ services:
       - "27017:27017"
     volumes:
       - /data/db
-  scraper:
-    build: ./cron-scraper
+  update:
+    build: ./cron
     depends_on:
       - splash
       - mongo
