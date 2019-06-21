@@ -1,2 +1,4 @@
 scalers/
 weights/
+*.py[cod]
+__pycache__/
