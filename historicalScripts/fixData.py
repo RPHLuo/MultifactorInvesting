@@ -9,6 +9,18 @@ for t in tickers:
     ticker = t['ticker']
     data = stocks.find({'ticker':ticker})
     for stock in data:
+        lastStock = stocks.find_one({
+                'ticker':ticker,
+                'debtEquity': { '$exists':True },
+                'currentRatio': { '$exists':True },
+                'dateNumber':
+                    { '$lte': dateNumber }
+            }, sort=[("dateNumber", pymongo.DESCENDING)])
+        if (not hasattr(stock,'debtEquity')):
+            stock['debtEquity'] = lastStock['debtEquity']
+        if (not hasattr(stock,'currentRatio')):
+            stock['currentRatio'] = lastStock['currentRatio']
+
         volumeText = str(stock['volume'])
         volume = 0
 
