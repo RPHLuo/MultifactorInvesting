@@ -14,7 +14,7 @@ for t in tickers:
                 'debtEquity': { '$exists':True },
                 'currentRatio': { '$exists':True },
                 'dateNumber':
-                    { '$lte': dateNumber }
+                    { '$lte': stock['dateNumber'] }
             }, sort=[("dateNumber", pymongo.DESCENDING)])
         if (not hasattr(stock,'debtEquity')):
             stock['debtEquity'] = lastStock['debtEquity']
