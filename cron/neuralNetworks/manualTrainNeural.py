@@ -1,5 +1,5 @@
 import os, sys
-path = './neuralNetworks/'
+path = './'
 lib_path = os.path.abspath(os.path.join(path))
 sys.path.append(lib_path)
 import price_lstm, target_ffnn, technical_cnn
