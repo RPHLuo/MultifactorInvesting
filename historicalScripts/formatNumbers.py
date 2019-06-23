@@ -21,8 +21,8 @@ for t in tickers:
         else:
             volume = float(volumeText)
         stock['volume'] = volume
-        stock['close'] = float(stock['close'])
-        stock['low'] = float(stock['low'])
-        stock['open'] = float(stock['open'])
+        stock['close'] = float(stock['close'].replace(',',''))
+        stock['low'] = float(stock['low'].replace(',',''))
+        stock['open'] = float(stock['open'].replace(',',''))
         del stock['_id']
         stocks.update({'ticker':ticker,'date':stock['date']}, {'$set':stock})
