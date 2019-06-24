@@ -7,6 +7,11 @@ import pymongo
 STOCKFEATURESIZE = 8
 STOCKFEATURES = {'close':1, 'volume':1, '_id':0}
 url = 'mongodb://mongo:27017/'
+try:
+    test = pymongo.MongoClient(url)
+    test.admin.command('ismaster')
+except pymongo.errors.ConnectionFailure:
+    url = 'mongodb://localhost:27017/'
 
 def getAll(ticker):
     client = pymongo.MongoClient(url)

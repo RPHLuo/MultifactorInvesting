@@ -6,6 +6,12 @@ import pymongo
 STOCKFEATURESIZE = 8
 STOCKFEATURES = {'close':1, 'volume':1, 'currentRatio':1, 'debtEquity':1, 'marketCap':1, 'pb':1, 'pe': 1, 'yd':1, '_id':0}
 url = 'mongodb://mongo:27017/'
+try:
+    test = pymongo.MongoClient(url)
+    test.admin.command('ismaster')
+except pymongo.errors.ConnectionFailure:
+    url = 'mongodb://localhost:27017/'
+
 def size(ticker):
     client = pymongo.MongoClient(url)
     db = client['tsx60data']
