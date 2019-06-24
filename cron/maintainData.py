@@ -1,6 +1,12 @@
 from datetime import datetime
 import pymongo
-mongoClient = pymongo.MongoClient("mongodb://localhost:27017/")
+url = 'mongodb://mongo:27017/'
+try:
+    test = pymongo.MongoClient(url)
+    test.admin.command('ismaster')
+except pymongo.errors.ConnectionFailure:
+    url = 'mongodb://localhost:27017/'
+mongoClient = pymongo.MongoClient(url)
 tsx60data = mongoClient['tsx60data']
 stocks = tsx60data['stocks']
 

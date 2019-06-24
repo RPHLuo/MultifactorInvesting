@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 services:
   splash:
     image: scrapinghub/splash
@@ -21,3 +21,7 @@ services:
     depends_on:
       - splash
       - mongo
+    volumes:
+      - type: bind
+        source: ./cron
+        target: /usr/src/app
