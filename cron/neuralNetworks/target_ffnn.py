@@ -7,7 +7,7 @@ import pymongo
 from matplotlib import pyplot
 import math
 import os
-from sklearn.externals import joblib
+import joblib
 
 def train(ticker='AEM', performance_indicator=200, start=0, epochs=10, path='./'):
     inputset = ffnn_data.getAll(ticker)

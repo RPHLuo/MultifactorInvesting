@@ -8,7 +8,7 @@ import pymongo
 from matplotlib import pyplot
 import math
 import os
-from sklearn.externals import joblib
+import joblib
 
 def train(ticker='AEM', time_step=200, start=0, epochs=10, path='./'):
     inputset = cnn_data.getAll(ticker)
@@ -45,14 +45,7 @@ def train(ticker='AEM', time_step=200, start=0, epochs=10, path='./'):
     dataset_size = len(inputset)
     test_size = 0.3
 
-    test_size = math.floor(test_size * dataset_size)
-    train_size = dataset_size - test_size
-
-    train_X = inputset[start+time_step:train_size+time_step]
-    test_X = inputset[train_size+time_step:]
-    train_y = outputset[start:train_size]
-    test_y = outputset[train_size:]
-
+    train_X, test_X, train_y, test_y = train_test_split(inputset, outputset, test_size=test_size)
 
     model = Sequential()
     model.add(Conv1D(filters=64, kernel_size=200, input_shape=(train_X.shape[1], train_X.shape[2])))

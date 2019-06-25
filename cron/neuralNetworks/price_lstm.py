@@ -1,13 +1,14 @@
 from keras.layers import Input, LSTM, Dropout, Dense
 from keras.models import Model, Sequential
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
 import lstm_data
 import numpy as np
 import pymongo
 from matplotlib import pyplot
 import math
 import os
-from sklearn.externals import joblib
+import joblib
 
 def train(ticker='AEM', time_step=200, start=0, epochs=10, path='./'):
     inputset = lstm_data.getAll(ticker)
@@ -38,20 +39,19 @@ def train(ticker='AEM', time_step=200, start=0, epochs=10, path='./'):
         joblib.dump(price_scaler, price_scaler_filename)
 
     inputset = lstm_data.get3dData(inputset, time_step)
+    outputset = lstm_data.get3dData(outputset, time_step)
     dataset_size = len(inputset)
-    train_percent = 0.7
-
-    train_size = math.floor(train_percent * dataset_size)
-    test_size = dataset_size - train_size
-    predict_length=1
-
-    train_X = inputset[start:train_size]
-    test_X = inputset[train_size:]
-    train_y = outputset[start+time_step:train_size+time_step]
-    test_y = outputset[train_size+time_step:]
+    test_size = 0.3
+    inputset = inputset[start:-time_step]
+    outputset = outputset[start+time_step:]
+    train_X, test_X, train_y, test_y = train_test_split(inputset, outputset, test_size=test_size)
+    print(train_X.shape)
+    print(test_X.shape)
+    print(train_y.shape)
+    print(test_y.shape)
 
     model = Sequential()
-    model.add(LSTM(200, input_shape=(train_X.shape[1], train_X.shape[2])))
+    model.add(LSTM(time_step*2, input_shape=(train_X.shape[1], train_X.shape[2]), return_sequences=True))
     model.add(Dense(1))
 
     model.compile(optimizer='adam', loss='mae')
@@ -94,7 +94,7 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
     stockdata = lstm_data.get3dData(stockdata, time_step)
 
     model = Sequential()
-    model.add(LSTM(200, input_shape=(stockdata.shape[1], stockdata.shape[2])))
+    model.add(LSTM(time_step, input_shape=(stockdata.shape[1], stockdata.shape[2])))
     model.add(Dense(1))
 
     if os.path.exists(file):

@@ -50,7 +50,7 @@ def get3dData(stocks, time_steps):
     length = len(stocks)
     resultData = []
     for i in range(0,length-time_steps):
-        datapoint = stocks[i:i+time_steps]
+        datapoint = stocks[i-time_steps:i]
         resultData.append(datapoint)
     return np.array(resultData, np.float32)
 
