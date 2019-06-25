@@ -22,7 +22,6 @@ for m_stock in missing:
         'currentRatio': { '$exists':True },
         'dateNumber': { '$lte': m_stock['dateNumber'] }
     }, sort=[("dateNumber", pymongo.DESCENDING)])
-    print(last_stock)
     if not hasattr(m_stock,'debtEquity'):
         m_stock['debtEquity'] = last_stock['debtEquity']
     if not hasattr(m_stock,'currentRatio'):
