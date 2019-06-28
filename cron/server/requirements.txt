@@ -1,0 +1,9 @@
+scrapy
+pymongo
+scrapy-splash
+tensorflow
+keras
+sklearn
+numpy
+matplotlib
+flask

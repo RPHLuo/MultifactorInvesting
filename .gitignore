@@ -2,4 +2,5 @@ scalers/
 weights/
 *.py[cod]
 __pycache__/
+data/
 .DS_Store
