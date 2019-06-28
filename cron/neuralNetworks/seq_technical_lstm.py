@@ -103,5 +103,4 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
         prediction = model.predict(stockdata)
         prediction = np.array(prediction[0]).reshape((time_step,1))
         prediction = price_scaler.inverse_transform(prediction)
-        #print(prediction)
         return prediction

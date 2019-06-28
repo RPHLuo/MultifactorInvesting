@@ -60,7 +60,7 @@ def train(ticker='AEM', time_step=200, start=0, epochs=10, path='./'):
     # save weights
     model.save_weights(file)
 
-def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
+def run(ticker='AEM', dateNumber=20190531, time_step=200, path='./'):
     scaler_filename = path + 'scalers/' + ticker+'_' + model_id + '_input.scaler'
     price_scaler_filename = path + 'scalers/' + ticker + '_' + model_id + '_output.scaler'
     file = path + 'weights/' + ticker + '_' + model_id + '_' + str(time_step) + '_steps.h5'
@@ -105,5 +105,4 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
         prediction = model.predict(stockdata)
         prediction = np.array(prediction[0]).reshape((time_step,1))
         prediction = price_scaler.inverse_transform(prediction)
-        #print(prediction)
         return prediction

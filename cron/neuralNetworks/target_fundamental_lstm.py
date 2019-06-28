@@ -98,5 +98,4 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
         model.compile(optimizer='adam', loss='mse')
         prediction = model.predict(stockdata)
         prediction = price_scaler.inverse_transform(prediction)
-        print(prediction)
         return prediction

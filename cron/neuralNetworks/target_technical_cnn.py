@@ -86,7 +86,7 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
         file_writer.close()
         joblib.dump(price_scaler, price_scaler_filename)
 
-    stockdata = target_data.getSingleSeqInput(ticker, dateNumber, time_step+1, STOCKFEATURES)
+    stockdata = target_data.getSingleSeqInput(ticker, dateNumber, time_step, STOCKFEATURES)
     stockdata = scaler.transform(stockdata)
     stockdata = np.array([stockdata])
 
@@ -102,5 +102,4 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
         model.compile(optimizer='adam', loss='mse')
         prediction = model.predict(stockdata)
         prediction = price_scaler.inverse_transform(prediction)
-        print(prediction)
         return prediction
