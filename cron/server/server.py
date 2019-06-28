@@ -33,6 +33,15 @@ def run():
     target_result, seq_result = weighted_target_ensemble.run(ticker=ticker, dateNumber=dateNumber, time_step=time_step, path=path)
     return jsonify(target_result)
 
+@app.route('/predict/single', methods=['POST'])
+def run():
+    ticker = request.json['ticker']
+    time_step = request.json['time_step']
+    dateNumber = request.json['dateNumber']
+    network = request.json['network']
+    result = networks[n].run(ticker=ticker, dateNumber=dateNumber, time_step=time_step, path=path)
+    return jsonify(result)
+
 @app.route('/train', methods=['POST'])
 def train():
     ticker = request.json['ticker'] if request.json['ticker'] else 'AEM'
