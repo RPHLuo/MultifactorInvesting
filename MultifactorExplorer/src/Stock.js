@@ -2,10 +2,20 @@ import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Config from "react-native-config";
 import Autocomplete from 'react-native-autocomplete-input';
-import { ClipPath, Defs } from 'react-native-svg'
-import { LineChart, XAxis, YAxis } from 'react-native-svg-charts';
+import { ClipPath, Defs, Rect } from 'react-native-svg'
+import { LineChart, XAxis, YAxis, Path } from 'react-native-svg-charts';
 import { ButtonGroup } from 'react-native-elements';
 
+const PredictLine = ({ line }) => (
+  <Path
+    key={ 'line-1' }
+    d={ line }
+    stroke={ 'rgb(222, 65, 122)' }
+    strokeWidth={ 2 }
+    fill={ 'none' }
+    clipPath={ 'url(#clip-path-2)' }
+  />
+)
 export default class Stock extends Component<Props> {
 
   state={
@@ -22,7 +32,6 @@ export default class Stock extends Component<Props> {
     predictButtons: ['None', '20 days', '50 days', '100 days', '200 days'],
     timeStepDays: [0, 20, 50, 100, 200],
     selected: false,
-    timeStep: 0,
     dateNumber: 20190531
   }
 
@@ -101,6 +110,7 @@ export default class Stock extends Component<Props> {
   updatePredictTime(predictIndex) {
     this.setState({ predictIndex })
     if (!predictIndex) {
+      this.setState({predictData:[], data:this.state.historicalData})
       return
     }
     let body = {
@@ -117,30 +127,19 @@ export default class Stock extends Component<Props> {
     }).then((res)=>res.json()).then(this.updatePredictData)
   }
 
-  const Clips = ({ x, width }) => (
-    <Defs key={ 'clips' }>
-        <ClipPath id="clip-path-1">
-            <Rect x={ '0' } y={ '0' } width={ x(indexToClipFrom) } height={ '100%' }/>
-        </ClipPath>
-        <ClipPath id={ 'clip-path-2' }>
-            <Rect x={ x(200) } y={ '0' } width={ width - x(indexToClipFrom) } height={ '100%' }/>
-      </ClipPath>
-    </Defs>
-  )
-
-  const DashedLine = ({ line }) => (
-    <Path
-      key={ 'line-1' }
-      d={ line }
-      stroke={ 'rgb(134, 65, 244)' }
-      strokeWidth={ 2 }
-      fill={ 'none' }
-      strokeDasharray={ [ 4, 4 ] }
-      clipPath={ 'url(#clip-path-2)' }
-    />
-  )
-
   renderStock() {
+    let timeStep = this.state.timeStepDays[this.state.predictIndex]
+    let predictLine = this.state.data.length - timeStep
+    const Clips = ({ x, width }) => (
+      <Defs key={ 'clips' }>
+          <ClipPath id="clip-path-1">
+              <Rect x={ '0' } y={ '0' } width={ x(predictLine) } height={ '100%' }/>
+          </ClipPath>
+          <ClipPath id={ 'clip-path-2' }>
+              <Rect x={ x(predictLine) } y={ '0' } width={ width - x(predictLine) } height={ '100%' }/>
+        </ClipPath>
+      </Defs>
+    )
     if (this.state.selected) {
       return (
         <View>
@@ -158,17 +157,17 @@ export default class Stock extends Component<Props> {
                 formatLabel={ value => `${value}` }
               />
               <LineChart
-                style={StyleSheet.absolutefill}
-                data={ this.state.data.map((item) => item.predict ? item.predict : 0) }
-                svg={{ stroke: 'rgb(222, 0, 10)' }}
-                contentInset={{ left: 20, top: 10, bottom: 10 }}
-              />
-              <LineChart
                 style={{ flex: 1, marginLeft: 16 }}
-                data={ this.state.data.map((item) => item.close ? item.close : 0) }
-                svg={{ stroke: 'rgb(134, 65, 244)' }}
+                data={ this.state.data.map((item) => item.close ? item.close : item.predict) }
+                svg={{
+                  stroke: 'rgb(134, 65, 244)',
+                  clipPath: 'url(#clip-path-1)'
+                }}
                 contentInset={{ left: 20, top: 10, bottom: 10 }}
-              />
+              >
+                <Clips/>
+                <PredictLine/>
+              </LineChart>
             </View>
             <XAxis
               style={{ marginHorizontal: 10 }}

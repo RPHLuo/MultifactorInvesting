@@ -28,7 +28,7 @@ def nextDates(date, time_step):
         date += timedelta(days=1)
         day = date.weekday()
         if day < 5:
-            result.append(date.strftime('%Y%m%d'))
+            result.append(date.strftime('%d/%m/%Y'))
     return result
 
 for ticker in tickers:
@@ -37,7 +37,7 @@ for ticker in tickers:
         target_result, seq_result = weighted_target_ensemble.run(ticker=ticker, dateNumber=date_number, time_step=time_step, path=path)
         date = datetime.strptime(str(date_number), '%Y%m%d')
         date_data = nextDates(date, time_step)
-        seq_result = [{'predict':str(seq_result[i]), 'date':date_data[i]} for i in range(0,time_step)]
+        seq_result = [{'close':str(seq_result[i]), 'date':date_data[i]} for i in range(0,time_step)]
         target_result = [str(result) for result in target_result]
         predictions.update({ 'ticker':ticker, 'time_step':time_step, 'dateNumber':date_number }, {
             'ticker':ticker,
