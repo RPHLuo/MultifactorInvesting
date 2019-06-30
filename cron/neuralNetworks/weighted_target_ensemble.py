@@ -17,11 +17,10 @@ def run(ticker='AEM', dateNumber=20190530, time_step=200, path='./'):
     target_results = np.array(target_results)
     # sum across ensemble members
     print(seq_results.shape)
-    seq_results = np.average(seq_results, axis=0)
+    seq_results = np.average(seq_results, axis=0).flatten()
     print(seq_results)
 
-    print(target_results.shape)    
-    target_results = np.average(target_results, axis=0)
+    print(target_results.shape)
+    target_results = np.average(target_results, axis=0).flatten()
     print(target_results)
     return target_results, seq_results
-run()

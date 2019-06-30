@@ -46,11 +46,11 @@ def train(ticker='AEM', time_step=200, start=0, epochs=10, path='./'):
     test_size = 0.3
     train_X, test_X, train_y, test_y = train_test_split(inputset, outputset, test_size=test_size)
     model = Sequential()
-    model.add(Conv1D(filters=64, kernel_size=200, input_shape=(train_X.shape[1], train_X.shape[2])))
+    model.add(Conv1D(filters=64, kernel_size=time_step, input_shape=(train_X.shape[1], train_X.shape[2])))
     model.add(MaxPooling1D(pool_size=1))
-    model.add(Dense(400, activation='relu'))
-    model.add(Dense(200))
-    model.add(Reshape((200,1)))
+    model.add(Dense(time_step*2, activation='relu'))
+    model.add(Dense(time_step))
+    model.add(Reshape((time_step,1)))
 
     model.compile(optimizer='adam', loss='mse')
 
@@ -93,11 +93,11 @@ def run(ticker='AEM', dateNumber=20190531, time_step=200, path='./'):
 
     #TODO
     model = Sequential()
-    model.add(Conv1D(filters=64, kernel_size=200, input_shape=(stockdata.shape[1], stockdata.shape[2])))
+    model.add(Conv1D(filters=64, kernel_size=time_step, input_shape=(stockdata.shape[1], stockdata.shape[2])))
     model.add(MaxPooling1D(pool_size=1))
-    model.add(Dense(400, activation='relu'))
-    model.add(Dense(200))
-    model.add(Reshape((200,1)))
+    model.add(Dense(time_step*2, activation='relu'))
+    model.add(Dense(time_step))
+    model.add(Reshape((time_step,1)))
 
     if os.path.exists(file):
         model.load_weights(file)

@@ -49,8 +49,8 @@ def train(ticker='AEM', time_step=200, start=0, epochs=10, path='./'):
 
     model = Sequential()
     model.add(LSTM(time_step, input_shape=(train_X.shape[1], train_X.shape[2])))
-    model.add(Dense(200))
-    model.add(Reshape((200,1)))
+    model.add(Dense(time_step))
+    model.add(Reshape((time_step,1)))
 
     model.compile(optimizer='adam', loss='mae')
 
@@ -94,8 +94,8 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
 
     model = Sequential()
     model.add(LSTM(time_step, input_shape=(stockdata.shape[1], stockdata.shape[2])))
-    model.add(Dense(200))
-    model.add(Reshape((200,1)))
+    model.add(Dense(time_step))
+    model.add(Reshape((time_step,1)))
 
     if os.path.exists(file):
         model.load_weights(file)

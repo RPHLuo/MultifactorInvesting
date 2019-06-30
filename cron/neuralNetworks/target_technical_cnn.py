@@ -45,7 +45,7 @@ def train(ticker='AEM', time_step=200, start=0, epochs=10, path='./'):
     train_X, test_X, train_y, test_y = train_test_split(inputset, outputset, test_size=test_size)
 
     model = Sequential()
-    model.add(Conv1D(filters=64, kernel_size=200, input_shape=(train_X.shape[1], train_X.shape[2])))
+    model.add(Conv1D(filters=64, kernel_size=time_step, input_shape=(train_X.shape[1], train_X.shape[2])))
     model.add(MaxPooling1D(pool_size=1))
     model.add(Flatten())
     model.add(Dense(50, activation='relu'))
@@ -91,7 +91,7 @@ def run(ticker='AEM', dateNumber=20180608, time_step=200, path='./'):
     stockdata = np.array([stockdata])
 
     model = Sequential()
-    model.add(Conv1D(filters=64, kernel_size=200, input_shape=(stockdata.shape[1], stockdata.shape[2])))
+    model.add(Conv1D(filters=64, kernel_size=time_step, input_shape=(stockdata.shape[1], stockdata.shape[2])))
     model.add(MaxPooling1D(pool_size=1))
     model.add(Flatten())
     model.add(Dense(50, activation='relu'))
