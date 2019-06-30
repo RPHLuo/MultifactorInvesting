@@ -3,4 +3,5 @@ weights/
 *.py[cod]
 __pycache__/
 data/
+.env
 .DS_Store
