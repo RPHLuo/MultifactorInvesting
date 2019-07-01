@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import {Platform, StyleSheet, View, TouchableOpacity } from 'react-native';
 import Config from "react-native-config";
 import Autocomplete from 'react-native-autocomplete-input';
 import { ClipPath, Defs, Rect } from 'react-native-svg'
 import { LineChart, XAxis, YAxis, Path } from 'react-native-svg-charts';
-import { ButtonGroup } from 'react-native-elements';
+import { ButtonGroup, Icon, Text } from 'react-native-elements';
 
 const PredictLine = ({ line }) => (
   <Path
@@ -82,11 +82,11 @@ export default class Stock extends Component<Props> {
   updatePredictData(predictData) {
     let seqResult = JSON.parse(predictData.seq_result)
     seqResult.forEach((item) => {
-      item.predict = parseFloat(item.predict)
+      item.close = parseFloat(item.close)
     })
     let data = []
     data.push(...this.state.historicalData, ...seqResult)
-    this.setState({data, predictData: seqResult, target_result: predictData.target_result, selected:true})
+    this.setState({data, predictData: seqResult, target_result: JSON.parse(predictData.target_result), selected:true})
   }
 
   search(ticker) {
@@ -110,7 +110,7 @@ export default class Stock extends Component<Props> {
   updatePredictTime(predictIndex) {
     this.setState({ predictIndex })
     if (!predictIndex) {
-      this.setState({predictData:[], data:this.state.historicalData})
+      this.setState({predictData:[], target_result: undefined, data:this.state.historicalData})
       return
     }
     let body = {
@@ -125,6 +125,48 @@ export default class Stock extends Component<Props> {
         },
         body: JSON.stringify(body)
     }).then((res)=>res.json()).then(this.updatePredictData)
+  }
+
+  formatReturn(percentage) {
+    percentage = parseFloat(percentage)
+    percentage *= 100
+    return percentage.toFixed(2) + '%'
+  }
+
+  renderTargetResult() {
+    if (this.state.target_result) {
+      return (
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex:1,justifyContent: 'center', alignItems: 'center', textAlign: 'center'}}>
+            <Icon
+              name='arrow-up'
+              type='font-awesome'
+              color='#00aced'
+            />
+            <Text h4>Upside</Text>
+            <Text>{this.formatReturn(this.state.target_result[0])}</Text>
+          </View>
+          <View style={{flex:1,justifyContent: 'center', alignItems: 'center', textAlign: 'center'}}>
+            <Icon
+              name='arrow-down'
+              type='font-awesome'
+              color='#00aced'
+            />
+            <Text h4>Downside</Text>
+            <Text>{this.formatReturn(this.state.target_result[1])}</Text>
+          </View>
+          <View style={{flex:1,justifyContent: 'center', alignItems: 'center', textAlign: 'center'}}>
+            <Icon
+              name='percent'
+              type='font-awesome'
+              color='#00aced'
+            />
+            <Text h4>Return</Text>
+            <Text>{this.formatReturn(this.state.target_result[2])}</Text>
+          </View>
+        </View>
+      )
+    }
   }
 
   renderStock() {
@@ -144,21 +186,19 @@ export default class Stock extends Component<Props> {
       return (
         <View>
           <View style={{flex:1}}>
-            <View style={{ height: 200, flexDirection: 'row' }}>
+            <View style={{ height: 350, flexDirection: 'row' }}>
               <YAxis
-                data={ this.state.data }
-                yAccessor={ value => value.close }
+                data={ this.state.data.map(item => item.close) }
                 contentInset={ { bottom: 10, top: 10 } }
                 svg={{
                   fill: 'grey',
                   fontSize: 10,
                 }}
-                numberOfTicks={ 4 }
-                formatLabel={ value => `${value}` }
+                numberOfTicks={ 5 }
               />
               <LineChart
                 style={{ flex: 1, marginLeft: 16 }}
-                data={ this.state.data.map((item) => item.close ? item.close : item.predict) }
+                data={ this.state.data.map(item => item.close) }
                 svg={{
                   stroke: 'rgb(134, 65, 244)',
                   clipPath: 'url(#clip-path-1)'
@@ -192,6 +232,7 @@ export default class Stock extends Component<Props> {
             buttons={this.state.predictButtons}
             containerStyle={{height: 50}}
           />
+          {this.renderTargetResult()}
         </View>
       )
     }
