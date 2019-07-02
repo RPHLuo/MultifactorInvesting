@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 import json
-from jsonpickle import pickler
 from datetime import datetime, timedelta
 import os, sys
 import joblib
@@ -40,21 +39,6 @@ def getAvailableStocks():
     tickers = supportedStocks.read().split('\n')
     tickers = tickers[0:-1]
     return jsonify(tickers)
-
-#@app.route('/predict_old', methods=['POST'])
-#def predict_old():
-#    jpickle = pickler.Pickler()
-#    ticker = request.json['ticker']
-#    time_step = request.json['time_step']
-#    dateNumber = request.json['dateNumber']
-#    target_result, seq_result = weighted_target_ensemble.run(ticker=ticker, dateNumber=dateNumber, time_step=time_step, path=path)
-#    date = datetime.strptime(str(dateNumber), '%Y%m%d')
-#    dateData = nextDates(date, time_step)
-#    seq_result = list(seq_result)
-#    seq_result = [{'predict':str(seq_result[i]),'date':dateData[i]} for i in range(0,time_step)]
-#    print(seq_result)
-#    return json.dumps({ 'sequence':seq_result, 'target':list(target_result) })
-
 
 @app.route('/predict', methods=['POST'])
 def predict():

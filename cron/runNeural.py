@@ -16,6 +16,7 @@ except pymongo.errors.ConnectionFailure:
 mongoClient = pymongo.MongoClient(url)
 tsx60data = mongoClient['tsx60data']
 predictions = tsx60data['predict']
+stocks = tsx60data['stocks']
 
 supportedStocks = open('./supportedList','r')
 tickers = supportedStocks.read().split('\n')
@@ -30,6 +31,9 @@ def nextDates(date, time_step):
         if day < 5:
             result.append(date.strftime('%d/%m/%Y'))
     return result
+
+latest = stocks.find_one({}, sort=[("dateNumber", pymongo.DESCENDING)])
+date_number = latest['dateNumber']
 
 for ticker in tickers:
     for time_step in time_steps:
