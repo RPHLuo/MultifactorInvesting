@@ -37,7 +37,6 @@ date_number = latest['dateNumber']
 
 for ticker in tickers:
     for time_step in time_steps:
-        date_number = 20190531
         target_result, seq_result = weighted_target_ensemble.run(ticker=ticker, dateNumber=date_number, time_step=time_step, path=path)
         date = datetime.strptime(str(date_number), '%Y%m%d')
         date_data = nextDates(date, time_step)
