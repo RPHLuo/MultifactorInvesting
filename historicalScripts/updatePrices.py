@@ -5,7 +5,7 @@ tsx60data = mongoClient['tsx60data']
 stocks = tsx60data['stocks']
 constituents = tsx60data['constituents']
 earnings = tsx60data['earnings']
-ticker = "AEM"
+ticker = "BAM.A"
 file = open(ticker+'.csv', 'r')
 lines = file.read().split('\n')
 lines.pop(0)
@@ -15,12 +15,12 @@ for line in lines:
     lineData = line.split(',')
     if line != '':
         date = datetime.strptime(lineData[0].strip(), '%d/%m/%Y')
-        sharesOutstanding = float(lineData[6].strip())
-        dividend = float(lineData[7].strip())
-        debtEquity = float(lineData[9].strip())
-        currentRatio = float(lineData[10].strip())
-        eps = float(lineData[11].strip())
-        bookValue = float(lineData[12].strip())
+        sharesOutstanding = float(lineData[1].strip())
+        dividend = float(lineData[2].strip())
+        debtEquity = float(lineData[4].strip())
+        currentRatio = float(lineData[3].strip())
+        eps = float(lineData[6].strip())
+        bookValue = float(lineData[5].strip())
         data[date] = {
             'sharesOutstanding':sharesOutstanding,
             'dividend':dividend,
@@ -34,7 +34,7 @@ priceData = {}
 keys = sorted(data.keys())
 for stock in stockData:
     date = datetime.strptime(stock['date'], '%d/%m/%Y')
-    price = float(stock['close'])
+    price = float(stock['adjustedPrice'])
     for index in range(1,len(keys)):
         if (date < keys[index] and date < keys[index - 1]):
             reportDate = keys[index - 1]
