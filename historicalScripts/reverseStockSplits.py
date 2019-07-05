@@ -4,7 +4,7 @@ mongoClient = pymongo.MongoClient("mongodb://localhost:27017/")
 tsx60data = mongoClient['tsx60data']
 stocks = tsx60data['stocks']
 constituents = tsx60data['constituents']
-ticker = "AEM"
+ticker = "BAM.A"
 #dateNumber
 splitDates = [20040602,20060428,20070604,20150512]
 #1 share = how many shares
