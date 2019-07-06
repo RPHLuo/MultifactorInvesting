@@ -191,7 +191,7 @@ class StockSpider(scrapy.Spider):
             except:
                 pass
             try:
-                marketCap = float(data['Market Cap (Dil. Avg Shrs):'].replace(',','').strip()) * difference
+                marketCap = float(data['Market Cap:'].replace(',','').strip()) * difference
             except:
                 pass
             last_day = stocks.find({ 'ticker': response.meta['ticker']}).sort('date', -1).limit(1)[0]

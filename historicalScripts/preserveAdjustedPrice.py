@@ -9,6 +9,7 @@ for t in tickers:
     ticker = t['ticker']
     data = stocks.find({'ticker':ticker})
     for stock in data:
-		stock['adjustedPrice'] = stock['close']
-        del stock['_id']
-        stocks.update({'ticker':ticker,'date':stock['date']}, {'$set':stock})
+    	if not 'adjustedPrice' in stock:
+    		stock['adjustedPrice'] = stock['close']
+            del stock['_id']
+            stocks.update({'ticker':ticker,'date':stock['date']}, {'$set':stock})

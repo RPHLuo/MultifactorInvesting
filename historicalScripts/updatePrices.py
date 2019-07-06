@@ -14,7 +14,7 @@ data = {}
 for line in lines:
     lineData = line.split(',')
     if line != '':
-        date = datetime.strptime(lineData[0].strip(), '%d/%m/%Y')
+        date = datetime.strptime(lineData[0].strip(), '%m/%d/%Y')
         sharesOutstanding = float(lineData[1].strip())
         dividend = float(lineData[2].strip())
         debtEquity = float(lineData[4].strip())
