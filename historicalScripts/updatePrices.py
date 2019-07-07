@@ -41,7 +41,7 @@ for stock in stockData:
             report = data[reportDate]
             stock['pe'] = price / report['eps']
             stock['pb'] = price / report['bookValue']
-            stock['yd'] = report['dividend'] / price
+            stock['yd'] = (report['dividend'] / price) * 100
             stock['marketCap'] = price * report['sharesOutstanding']
             stock['debtEquity']  = report['debtEquity']
             stock['currentRatio'] = report['currentRatio']
@@ -53,7 +53,7 @@ for stock in stockData:
             report = data[reportDate]
             stock['pe'] = price / report['eps']
             stock['pb'] = price / report['bookValue']
-            stock['yd'] = report['dividend'] / price
+            stock['yd'] = (report['dividend'] / price) * 100
             stock['marketCap'] = price * report['sharesOutstanding']
             stock['debtEquity']  = report['debtEquity']
             stock['currentRatio'] = report['currentRatio']
